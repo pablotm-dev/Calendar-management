@@ -557,6 +557,217 @@ public class ExcelReportService {
         titleCell.setCellStyle(headerStyle);
         // Ensure title spans both columns (0-1)
         sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 1));
+
+        rowNum++; // Empty row for spacing
+        // Create empty row with borders
+        Row emptyRow1 = sheet.createRow(rowNum - 1);
+        for (int i = 0; i < 2; i++) {
+            Cell emptyCell = emptyRow1.createCell(i);
+            emptyCell.setCellStyle(createEmptyCellStyle(workbook));
+        }
+
+        // Summary section with a separator line
+        Row summaryLineRow = sheet.createRow(rowNum++);
+        for (int i = 0; i < 2; i++) {
+            Cell cell = summaryLineRow.createCell(i);
+            cell.setCellStyle(headerStyle);
+        }
+        sheet.addMergedRegion(new CellRangeAddress(rowNum-1, rowNum-1, 0, 1));
+
+        Row summaryHeaderRow = sheet.createRow(rowNum++);
+        Cell summaryHeaderCell = summaryHeaderRow.createCell(0);
+        summaryHeaderCell.setCellValue("RESUMO");
+        summaryHeaderCell.setCellStyle(subHeaderStyle);
+        sheet.addMergedRegion(new CellRangeAddress(rowNum-1, rowNum-1, 0, 1));
+
+        Row emailRow = sheet.createRow(rowNum++);
+        Cell emailLabelCell = emailRow.createCell(0);
+        emailLabelCell.setCellValue("Email do Colaborador:");
+        emailLabelCell.setCellStyle(subHeaderStyle);
+
+        Cell emailValueCell = emailRow.createCell(1);
+        emailValueCell.setCellValue(report.getCollaboratorEmail());
+        emailValueCell.setCellStyle(dataStyle);
+
+        Row totalHoursRow = sheet.createRow(rowNum++);
+        Cell totalHoursLabelCell = totalHoursRow.createCell(0);
+        totalHoursLabelCell.setCellValue("Total de Horas no Período:");
+        totalHoursLabelCell.setCellStyle(subHeaderStyle);
+
+        Cell totalHoursValueCell = totalHoursRow.createCell(1);
+        totalHoursValueCell.setCellValue(report.getTotalHoursWorked());
+        totalHoursValueCell.setCellStyle(totalStyle);
+
+        // Add period information
+        Row periodRow = sheet.createRow(rowNum++);
+        Cell periodLabelCell = periodRow.createCell(0);
+        periodLabelCell.setCellValue("Período do Relatório:");
+        periodLabelCell.setCellStyle(subHeaderStyle);
+
+        Cell periodValueCell = periodRow.createCell(1);
+        String periodText = "";
+        if (startDate != null && endDate != null) {
+            String startDateStr = DATE_TIME_FORMATTER.format(startDate);
+            String endDateStr = DATE_TIME_FORMATTER.format(endDate);
+            periodText = startDateStr + " até " + endDateStr;
+        } else if (startDate != null) {
+            periodText = "A partir de " + DATE_TIME_FORMATTER.format(startDate);
+        } else if (endDate != null) {
+            periodText = "Até " + DATE_TIME_FORMATTER.format(endDate);
+        } else {
+            periodText = "Período completo";
+        }
+        periodValueCell.setCellValue(periodText);
+        periodValueCell.setCellStyle(dataStyle);
+
+        rowNum++; // Empty row for spacing
+        // Create empty row with borders
+        Row emptyRow2 = sheet.createRow(rowNum - 1);
+        for (int i = 0; i < 2; i++) {
+            Cell emptyCell = emptyRow2.createCell(i);
+            emptyCell.setCellStyle(createEmptyCellStyle(workbook));
+        }
+
+        // Projects section with a separator line
+        Row projectsLineRow = sheet.createRow(rowNum++);
+        for (int i = 0; i < 2; i++) {
+            Cell cell = projectsLineRow.createCell(i);
+            cell.setCellStyle(headerStyle);
+        }
+        sheet.addMergedRegion(new CellRangeAddress(rowNum-1, rowNum-1, 0, 1));
+
+        Row projectsHeaderRow = sheet.createRow(rowNum++);
+        Cell projectsHeaderCell = projectsHeaderRow.createCell(0);
+        projectsHeaderCell.setCellValue("HORAS POR PROJETO");
+        projectsHeaderCell.setCellStyle(subHeaderStyle);
+        sheet.addMergedRegion(new CellRangeAddress(rowNum-1, rowNum-1, 0, 1));
+
+        // Projects header
+        Row projectsTableHeaderRow = sheet.createRow(rowNum++);
+
+        Cell projectNameHeaderCell = projectsTableHeaderRow.createCell(0);
+        projectNameHeaderCell.setCellValue("Nome do Projeto");
+        projectNameHeaderCell.setCellStyle(headerStyle);
+
+        Cell projectHoursHeaderCell = projectsTableHeaderRow.createCell(1);
+        projectHoursHeaderCell.setCellValue("Horas / Cliente");
+        projectHoursHeaderCell.setCellStyle(headerStyle);
+
+        // Projects data
+        for (CollaboratorReportDTO.ProjectHoursDTO project : report.getHoursPerProject()) {
+            Row row = sheet.createRow(rowNum++);
+
+            Cell nameCell = row.createCell(0);
+            nameCell.setCellValue(project.getProjectName());
+            nameCell.setCellStyle(dataStyle);
+
+            Cell hoursCell = row.createCell(1);
+            hoursCell.setCellValue(project.getHours() + " (" + project.getClientName() + ")");
+            hoursCell.setCellStyle(dataStyle);
+        }
+
+        rowNum++; // Empty row for spacing
+        // Create empty row with borders
+        Row emptyRowProjects = sheet.createRow(rowNum - 1);
+        for (int i = 0; i < 2; i++) {
+            Cell emptyCell = emptyRowProjects.createCell(i);
+            emptyCell.setCellStyle(createEmptyCellStyle(workbook));
+        }
+
+        // Tasks section with a separator line
+        Row tasksLineRow = sheet.createRow(rowNum++);
+        for (int i = 0; i < 2; i++) {
+            Cell cell = tasksLineRow.createCell(i);
+            cell.setCellStyle(headerStyle);
+        }
+        sheet.addMergedRegion(new CellRangeAddress(rowNum-1, rowNum-1, 0, 1));
+
+        Row tasksHeaderRow = sheet.createRow(rowNum++);
+        Cell tasksHeaderCell = tasksHeaderRow.createCell(0);
+        tasksHeaderCell.setCellValue("HORAS POR TASK");
+        tasksHeaderCell.setCellStyle(subHeaderStyle);
+        sheet.addMergedRegion(new CellRangeAddress(rowNum-1, rowNum-1, 0, 1));
+
+        // Tasks header
+        Row tasksTableHeaderRow = sheet.createRow(rowNum++);
+
+        Cell taskNameHeaderCell = tasksTableHeaderRow.createCell(0);
+        taskNameHeaderCell.setCellValue("Nome da Task");
+        taskNameHeaderCell.setCellStyle(headerStyle);
+
+        Cell taskHoursHeaderCell = tasksTableHeaderRow.createCell(1);
+        taskHoursHeaderCell.setCellValue("Horas / Projeto");
+        taskHoursHeaderCell.setCellStyle(headerStyle);
+
+        // Tasks data
+        for (CollaboratorReportDTO.TaskHoursDTO task : report.getHoursPerTask()) {
+            Row row = sheet.createRow(rowNum++);
+
+            Cell nameCell = row.createCell(0);
+            nameCell.setCellValue(task.getTaskName());
+            nameCell.setCellStyle(dataStyle);
+
+            Cell hoursCell = row.createCell(1);
+            hoursCell.setCellValue(task.getHours() + " (" + task.getProjectName() + ")");
+            hoursCell.setCellStyle(dataStyle);
+        }
+
+        rowNum++; // Empty row for spacing
+        // Create empty row with borders
+        Row emptyRow3 = sheet.createRow(rowNum - 1);
+        for (int i = 0; i < 2; i++) {
+            Cell emptyCell = emptyRow3.createCell(i);
+            emptyCell.setCellStyle(createEmptyCellStyle(workbook));
+        }
+
+        // Events section - with a separator line
+        Row eventsLineRow = sheet.createRow(rowNum++);
+        for (int i = 0; i < 2; i++) {
+            Cell cell = eventsLineRow.createCell(i);
+            cell.setCellStyle(headerStyle);
+        }
+        sheet.addMergedRegion(new CellRangeAddress(rowNum-1, rowNum-1, 0, 1));
+
+        Row eventsHeaderRow = sheet.createRow(rowNum++);
+        Cell eventsHeaderCell = eventsHeaderRow.createCell(0);
+        eventsHeaderCell.setCellValue("EVENTOS DO CALENDÁRIO");
+        eventsHeaderCell.setCellStyle(subHeaderStyle);
+        sheet.addMergedRegion(new CellRangeAddress(rowNum-1, rowNum-1, 0, 1));
+
+        // Events header - using only 2 columns
+        Row eventsTableHeaderRow = sheet.createRow(rowNum++);
+
+        Cell eventSummaryHeaderCell = eventsTableHeaderRow.createCell(0);
+        eventSummaryHeaderCell.setCellValue("Descrição");
+        eventSummaryHeaderCell.setCellStyle(headerStyle);
+
+        Cell eventHoursHeaderCell = eventsTableHeaderRow.createCell(1);
+        eventHoursHeaderCell.setCellValue("Horas / Task");
+        eventHoursHeaderCell.setCellStyle(headerStyle);
+
+        // Events data - using only 2 columns
+        for (CalendarEventEntity event : events) {
+            Row row = sheet.createRow(rowNum++);
+
+            Cell summaryCell = row.createCell(0);
+            summaryCell.setCellValue(event.getSummary());
+            summaryCell.setCellStyle(descriptionDataStyle);
+
+            Cell hoursCell = row.createCell(1);
+            String hoursAndTask = "";
+            if (event.getStartInstant() != null && event.getEndInstant() != null) {
+                double hours = (double) java.time.Duration.between(
+                        event.getStartInstant(), event.getEndInstant()).toMinutes() / 60.0;
+                hoursAndTask = String.format("%.2f", hours);
+            }
+
+            if (event.getTask() != null) {
+                hoursAndTask += " (" + event.getTask().getNomeTask() + ")";
+            }
+
+            hoursCell.setCellValue(hoursAndTask);
+            hoursCell.setCellStyle(dataStyle);
+        }
     }
 
     /**
