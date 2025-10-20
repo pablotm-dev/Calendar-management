@@ -76,6 +76,20 @@ A aplicação expõe endpoints do Spring Boot Actuator para monitoramento:
 
 Estes endpoints são utilizados pelos health checks do Docker para garantir que a aplicação está funcionando corretamente.
 
+## Deploy no Render
+
+A aplicação está configurada para ser facilmente implantada na plataforma Render. Para detalhes sobre como fazer o deploy de forma segura, especialmente em relação às credenciais do Google Service Account, consulte o guia detalhado em [docs/RENDER_DEPLOYMENT.md](docs/RENDER_DEPLOYMENT.md).
+
+### Segurança das Credenciais
+
+Para proteger as credenciais do Google Service Account:
+
+1. O arquivo `service-account.json` está configurado para ser ignorado pelo Git (.gitignore)
+2. A aplicação foi modificada para carregar as credenciais de uma variável de ambiente quando disponível
+3. O arquivo `render.yaml` inclui a configuração para a variável de ambiente `GOOGLE_SERVICE_ACCOUNT_JSON`
+
+Isso permite que você mantenha o arquivo localmente para desenvolvimento, mas use variáveis de ambiente seguras em produção.
+
 ## Documentação da API
 
 A API do Calendar Management fornece endpoints para gerenciar clientes, projetos, tarefas e gerar relatórios. Abaixo está a documentação completa dos endpoints disponíveis.
