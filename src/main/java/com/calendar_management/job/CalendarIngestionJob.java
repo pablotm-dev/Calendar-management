@@ -24,7 +24,7 @@ public class CalendarIngestionJob {
     @Value("${app.workspace.users}")
     private String usersCsv;
 
-    // A cada 1 minuto
+    //A cada 1 minuto
     @Scheduled(cron = "0 */1 * * * *")
     public void run() {
         List<String> emails = Arrays.stream(usersCsv.split(","))
