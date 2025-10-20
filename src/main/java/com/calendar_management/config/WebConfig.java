@@ -13,10 +13,13 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedOrigins(
                         "http://localhost:3000",
                         "https://calendar-management-front-nn.vercel.app",
-                        "https://*.vercel.app"  // Para permitir qualquer subdomínio da Vercel
+                        "http://calendar-management-front-nn.vercel.app",
+                        "https://*.vercel.app",
+                        "http://*.vercel.app"  // Para permitir qualquer subdomínio da Vercel
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
-                .allowCredentials(true);
+                .allowCredentials(true)
+                .maxAge(3600); // 1 hour
     }
 }
